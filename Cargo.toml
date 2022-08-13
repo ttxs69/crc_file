@@ -1,0 +1,15 @@
+[package]
+name = "crc_file"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+crc = "3.0.0"
+
+[dev-dependencies]
+assert_cmd = "2.0.4"
+predicates = "2.1.1"
+assert_fs = "1.0.7"
+escargot = "0.5.7"
