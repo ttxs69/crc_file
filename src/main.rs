@@ -55,7 +55,7 @@ mod test_main {
         ];
         let config = Config::parse_args(args).unwrap();
         let result = run(&config).err().unwrap();
-        assert!(result.to_string().contains("No such file or directory"));)
+        assert!(result.to_string().contains("No such file or directory"));
     }
 
     #[test]
