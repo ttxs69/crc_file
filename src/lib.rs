@@ -7,7 +7,7 @@ use std::num::ParseIntError;
 
 #[derive(Debug)]
 pub struct Config {
-    pub filename: String,
+    pub filename: std::path::PathBuf,
     pub offset: u64,
     pub length: u64,
 }
@@ -23,7 +23,7 @@ pub fn parse(str: &str) -> Result<u64, ParseIntError> {
 pub fn run(config: &Config) -> Result<u32, Box<dyn error::Error>> {
     let f = File::open(&config.filename);
     if let Err(e) = f {
-        eprintln!("Could not open file: {}", config.filename);
+        eprintln!("Could not open file: {}", config.filename.to_str().unwrap());
         return Err(Box::new(e));
     }
 
@@ -106,7 +106,7 @@ impl Config {
             let offset = *matches.get_one::<u64>("offset").unwrap();
             let length = *matches.get_one::<u64>("length").unwrap();
             Ok(Config {
-                filename: filename.to_string(),
+                filename: filename.into(),
                 offset,
                 length,
             })
@@ -153,7 +153,7 @@ mod tests {
             String::from("0x456"),
         ];
         let config = Config::parse_args(args).unwrap();
-        assert_eq!(config.filename, "test.txt");
+        assert_eq!(config.filename.to_str().unwrap(), "test.txt");
         assert_eq!(config.offset, 0x123);
         assert_eq!(config.length, 0x456);
     }
@@ -180,7 +180,7 @@ mod tests {
             String::from("test.txt"),
         ];
         let config = Config::parse_args(args).unwrap();
-        assert_eq!(config.filename, "test.txt");
+        assert_eq!(config.filename.to_str().unwrap(), "test.txt");
         assert_eq!(config.offset, 0);
         assert_eq!(config.length, 0);
     }
@@ -195,7 +195,7 @@ mod tests {
             String::from("0x123"),
         ];
         let config = Config::parse_args(args).unwrap();
-        assert_eq!(config.filename, "test.txt");
+        assert_eq!(config.filename.to_str().unwrap(), "test.txt");
         assert_eq!(config.offset, 0x123);
         assert_eq!(config.length, 0);
     }
