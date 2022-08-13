@@ -81,7 +81,6 @@ impl Config {
         let matches = cmd.try_get_matches_from_mut(args);
         if let Err(e) = matches {
             match e.kind {
-                clap::ErrorKind::MissingRequiredArgument => return Err(e),
                 clap::ErrorKind::DisplayHelp => {
                     cmd.print_help()?;
                     return Err(clap::Error::with_description(
@@ -131,34 +130,15 @@ mod tests {
     fn test_parse() {
         assert_eq!(parse("0x123"), Ok(0x123));
         assert_eq!(parse("123"), Ok(123));
-        assert_eq!(
-            parse("0x").unwrap_err().kind().to_owned(),
-            IntErrorKind::Empty
-        );
-        assert_eq!(
-            parse("0x10000000000000000").unwrap_err().kind().to_owned(),
-            IntErrorKind::PosOverflow
-        );
-        assert_eq!(
-            parse("abcdefg").unwrap_err().kind().to_owned(),
-            IntErrorKind::InvalidDigit
-        );
-        assert_eq!(
-            parse("0xg").unwrap_err().kind().to_owned(),
-            IntErrorKind::InvalidDigit
-        );
-        assert_eq!(
-            parse("").unwrap_err().kind().to_owned(),
-            IntErrorKind::Empty
-        );
-        assert_eq!(
-            parse("0.111").unwrap_err().kind().to_owned(),
-            IntErrorKind::InvalidDigit
-        );
-        assert_eq!(
-            parse("-99999").unwrap_err().kind().to_owned(),
-            IntErrorKind::InvalidDigit
-        );
+        assert_eq!(parse("0x").unwrap_err().kind(), &IntErrorKind::Empty);
+        let result = parse("0x10000000000000000").unwrap_err();
+        assert_eq!(result.kind(), &IntErrorKind::PosOverflow);
+        let result = parse("abcdefg").unwrap_err();
+        assert_eq!(result.kind(), &IntErrorKind::InvalidDigit);
+        let result = parse("0xg").unwrap_err();
+        assert_eq!(result.kind(), &IntErrorKind::InvalidDigit);
+        let result = parse("").unwrap_err();
+        assert_eq!(result.kind(), &IntErrorKind::Empty);
     }
 
     #[test]
