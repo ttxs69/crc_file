@@ -78,6 +78,18 @@ mod test_main {
     }
 
     #[test]
+    fn test_could_not_open_file() {
+        let args = vec![
+            String::from("crc_file"),
+            String::from("file_not_exists.txt"),
+            String::from("0x0"),
+            String::from("0x1000"),
+        ];
+        let result = run(&args).err().unwrap();
+        assert!(result.to_string().contains("No such file or directory"));
+    }
+
+    #[test]
     fn test_run_ok() {
         let file = assert_fs::NamedTempFile::new("sample.txt").unwrap();
         file.write_str("A test\nActual content\nMore content\nAnother test")
