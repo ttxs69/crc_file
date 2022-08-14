@@ -15,17 +15,8 @@ jobs:
 
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
-      version: ${{ env.VERSION }}
+      version: ${{ steps.release.outputs.version }}
     steps:
-      - name: Get the release version from the tag
-        shell: bash
-        if: env.VERSION == ''
-        run: |
-          # Apparently, this is the right way to get a tag name. Really?
-          #
-          # See: https://github.community/t5/GitHub-Actions/How-to-get-just-the-tag-name/m-p/32167/highlight/true#M1027
-          echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          echo "version is: ${{ env.VERSION }}"
       - name: GH Release
         id: release
         uses: softprops/action-gh-release@v0.1.14
@@ -122,7 +113,7 @@ jobs:
       run: |
         outdir="${{ env.TARGET_DIR }}"
         echo "outdir is $outdir"
-        staging="${{ needs.create-release.outputs.VERSION }}-${{ matrix.target }}"
+        staging="${{ needs.create-release.outputs.version }}-${{ matrix.target }}"
 
         if [ "${{ matrix.os }}" = "windows-2019" ]; then
           file="crc_file-${staging}.exe"
