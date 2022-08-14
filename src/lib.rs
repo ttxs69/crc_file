@@ -52,21 +52,19 @@ pub fn run(config: &Config) -> Result<u32, Box<dyn error::Error>> {
 
 impl Config {
     pub fn parse_args(args: Vec<String>) -> Result<Config, clap::Error> {
-        let mut cmd = command!() // requires `cargo` feature
+        let matches = command!() // requires `cargo` feature
             .arg(
                 clap::Arg::new("filename")
                     .required(true)
                     .short('f')
                     .long("filename")
                     .help("The file to calculate the CRC of")
-                    .display_order(1)
                     .takes_value(true),
             )
             .arg(
                 clap::Arg::new("offset")
                     .short('o')
                     .long("offset")
-                    .display_order(2)
                     .help("offset of the file to read")
                     .value_parser(clap::builder::ValueParser::new(parse))
                     .default_value("0"),
@@ -75,15 +73,16 @@ impl Config {
                 clap::Arg::new("length")
                     .short('l')
                     .long("length")
-                    .display_order(3)
                     .help("length of the file to read, 0 means read to end of file")
                     .value_parser(clap::builder::ValueParser::new(parse))
                     .default_value("0"),
-            );
-        let matches = cmd.try_get_matches_from_mut(args)?;
+            )
+            .try_get_matches_from_mut(args)?;
+
         let filename = matches.get_one::<String>("filename").unwrap();
         let offset = *matches.get_one::<u64>("offset").unwrap();
         let length = *matches.get_one::<u64>("length").unwrap();
+
         Ok(Config {
             filename: filename.into(),
             offset,
@@ -94,10 +93,11 @@ impl Config {
 
 #[cfg(test)]
 mod tests {
-    use clap::ErrorKind;
 
     use super::*;
+    use clap::ErrorKind;
     use std::{num::IntErrorKind, vec};
+
     #[test]
     fn test_parse() {
         assert_eq!(parse("0x123"), Ok(0x123));
@@ -181,6 +181,7 @@ mod tests {
         let error = Config::parse_args(args);
         assert_eq!(error.unwrap_err().kind(), ErrorKind::DisplayHelp);
     }
+
     #[test]
     fn test_parse_args_version() {
         let args = vec![String::from("crc_file"), String::from("--version")];
