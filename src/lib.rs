@@ -23,7 +23,10 @@ pub fn parse(str: &str) -> Result<u64, ParseIntError> {
 pub fn run(config: &Config) -> Result<u32, Box<dyn error::Error>> {
     let f = File::open(&config.filename);
     if let Err(e) = f {
-        eprintln!("Could not open file: {}", config.filename.to_str().unwrap());
+        eprintln!(
+            "Could not open file: {}",
+            config.filename.to_str().unwrap()
+        );
         return Err(Box::new(e));
     }
 
@@ -83,11 +86,7 @@ impl Config {
         let offset = *matches.get_one::<u64>("offset").unwrap();
         let length = *matches.get_one::<u64>("length").unwrap();
 
-        Ok(Config {
-            filename: filename.into(),
-            offset,
-            length,
-        })
+        Ok(Config { filename: filename.into(), offset, length })
     }
 }
 
