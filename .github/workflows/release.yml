@@ -15,7 +15,7 @@ jobs:
 
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
-      version: ${{ env.VERSION }}
+      version: ${{ steps.get_version.outputs.VERSION }}
     steps:
       - name: Get the version
         id: get_version
