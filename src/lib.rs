@@ -55,8 +55,10 @@ impl Config {
         let mut cmd = command!() // requires `cargo` feature
             .arg(
                 clap::Arg::new("filename")
+                    .required(true)
                     .short('f')
                     .long("filename")
+                    .help("The file to calculate the CRC of")
                     .display_order(1)
                     .takes_value(true),
             )
@@ -78,45 +80,15 @@ impl Config {
                     .value_parser(clap::builder::ValueParser::new(parse))
                     .default_value("0"),
             );
-        let matches = cmd.try_get_matches_from_mut(args);
-        if let Err(e) = matches {
-            match e.kind {
-                clap::ErrorKind::DisplayHelp => {
-                    cmd.print_help()?;
-                    return Err(clap::Error::with_description(
-                        String::from("No filename specified"),
-                        clap::ErrorKind::DisplayHelp,
-                    ));
-                }
-                clap::ErrorKind::DisplayVersion => {
-                    println!("{}", cmd.render_long_version());
-                    return Err(clap::Error::with_description(
-                        String::from("No filename specified"),
-                        clap::ErrorKind::DisplayVersion,
-                    ));
-                }
-                _ => {
-                    return Err(e);
-                }
-            }
-        }
-        let matches = matches.unwrap();
-        let filename = matches.get_one::<String>("filename");
-        if let Some(filename) = filename {
-            let offset = *matches.get_one::<u64>("offset").unwrap();
-            let length = *matches.get_one::<u64>("length").unwrap();
-            Ok(Config {
-                filename: filename.into(),
-                offset,
-                length,
-            })
-        } else {
-            cmd.print_help()?;
-            return Err(clap::Error::with_description(
-                String::from("No filename specified"),
-                clap::ErrorKind::MissingRequiredArgument,
-            ));
-        }
+        let matches = cmd.try_get_matches_from_mut(args)?;
+        let filename = matches.get_one::<String>("filename").unwrap();
+        let offset = *matches.get_one::<u64>("offset").unwrap();
+        let length = *matches.get_one::<u64>("length").unwrap();
+        Ok(Config {
+            filename: filename.into(),
+            offset,
+            length,
+        })
     }
 }
 

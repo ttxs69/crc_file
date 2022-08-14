@@ -3,18 +3,12 @@ use std::error;
 fn main() -> Result<(), Box<dyn error::Error>> {
     let args = std::env::args().collect::<Vec<String>>();
     let config = Config::parse_args(args);
-    if let Err(e) = config {
-        if e.kind() == clap::ErrorKind::MissingRequiredArgument
-            || e.kind() == clap::ErrorKind::DisplayHelp
-            || e.kind() == clap::ErrorKind::DisplayVersion
-        {
-            return Ok(());
-        } else {
-            return Err(Box::new(e));
-        }
+    if config.is_err() {
+        config.unwrap_err().print().unwrap();
+    } else {
+        let crc = run(&config.unwrap())?;
+        println!("{:#x}", crc);
     }
-    let crc = run(&config.unwrap())?;
-    println!("{:#x}", crc);
     Ok(())
 }
 
