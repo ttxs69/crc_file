@@ -3,7 +3,7 @@ use std::error;
 fn main() -> Result<(), Box<dyn error::Error>> {
     let args = std::env::args().collect::<Vec<String>>();
     let config = Config::parse_args(args);
-    if config.is_err() {
+    if let Err(..) = config {
         config.unwrap_err().print().unwrap();
     } else {
         let crc = run(&config.unwrap())?;

@@ -13,10 +13,10 @@ pub struct Config {
 }
 
 pub fn parse(str: &str) -> Result<u64, ParseIntError> {
-    if str.starts_with("0x") {
-        Ok(u64::from_str_radix(&&str[2..], 16)?)
+    if let Some(stripped) = str.strip_prefix("0x") {
+        Ok(u64::from_str_radix(stripped, 16)?)
     } else {
-        Ok(u64::from_str_radix(&str, 10)?)
+        Ok((str).parse::<u64>()?)
     }
 }
 
